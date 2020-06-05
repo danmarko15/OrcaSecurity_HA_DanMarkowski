@@ -1,18 +1,14 @@
 import argparse
 import logging
-import cloud
-from flask import Flask, request, jsonify, make_response
 import os
-import data_monitor
-import json
 from timeit import default_timer as timer
 
-
-# app = Flask(__name__)
+import cloud
+import data_monitor
+from flask import Flask, request, jsonify, make_response
 
 
 def run_on_startup():
-    # TODO config?
     logging.basicConfig(filename="attack_surface.log", level=logging.INFO,
                         format='%(asctime)s %(levelname)s %(name)s %('
                                'threadName)s : %(message)s')
@@ -39,16 +35,16 @@ app = MyFlaskApp(__name__)
 def attack():
     start = timer()
     monitor = data_monitor.DataMonitor()
+
     vm_id = request.args.get('vm_id')
     app.logger.info(f'New attack request for VM: {vm_id}')
+
     cloud_env = cloud.Cloud()
     vm_list = cloud_env.vulnerable_to(vm_id)
+
     end = timer()
     monitor.log_new_request(start, end)
     return make_response(jsonify(list(vm_list)), 200)
-
-    # TODO if no vm_id passed?
-    # TODO if vm_id doesn't exists?
 
 
 @app.route('/api/v1.0/stats', methods=['GET'])
