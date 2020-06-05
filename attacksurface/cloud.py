@@ -1,9 +1,10 @@
 import json
 from flask import current_app as app
-
+import timeit
 
 class Singleton(type):
     _instances = {}
+
     def __call__(cls, *args, **kwargs):
         if cls not in cls._instances:
             cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
@@ -16,14 +17,13 @@ class Cloud(metaclass=Singleton):
             with open(cloud_env_cfg) as cloud_json_cfg:
                 cloud_env = json.load(cloud_json_cfg)
                 self.__vms_cfg = cloud_env["vms"]
+                self.vm_count = len(self.__vms_cfg)
                 self.__fw_rules = cloud_env["fw_rules"]
+                self.__init_cloud_env()
 
             # TODO log
-            # app.logger.info(f'Loaded JSON: {cloud_env}')
-            # app.logger.info(f'Loaded VMs: {self.vms}')
-            # app.logger.info(f'Loaded FW: {self.fw_rules}')
 
-    def init_cloud_env(self):
+    def __init_cloud_env(self):
         # TODO logs, try/catch
         app.logger.info(f'initializing the cloud environment')
         # log 'init vms'
@@ -88,3 +88,11 @@ class Cloud(metaclass=Singleton):
         else:
             app.logger.info(f'VM {vm_id} is safe from potential attacks')
         return vm_list
+
+    # def get_stats(self):
+        # the_time = timeit.Timer('Cloud.vulnerable_to(Cloud.vm_ids[0])', 'from cloud import Cloud').timeit()
+        # the_time = t.timeit(number=1)
+        # app.logger.info(f'Avg time of request is: {the_time}')
+        # return the_time
+        # request count
+        # vm count

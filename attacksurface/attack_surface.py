@@ -3,15 +3,16 @@ import logging
 import cloud
 from flask import Flask, request, jsonify, make_response
 import os
+import data_monitor
 import json
+from timeit import default_timer as timer
+
 
 # app = Flask(__name__)
 
 
-# @app.before_first_request
 def run_on_startup():
     # TODO config?
-    # TODO log
     logging.basicConfig(filename="attack_surface.log", level=logging.INFO,
                         format='%(asctime)s %(levelname)s %(name)s %('
                                'threadName)s : %(message)s')
@@ -19,8 +20,8 @@ def run_on_startup():
     arg_parse.add_argument("-ce", "--cloud", required=True, help="JSON of the cloud environment")
     args = vars(arg_parse.parse_args())
     cloud_env_cfg = args["cloud"]
-    cloud_env = cloud.Cloud(cloud_env_cfg)
-    cloud_env.init_cloud_env()
+    cloud.Cloud(cloud_env_cfg)
+    data_monitor.DataMonitor()
 
 
 class MyFlaskApp(Flask):
@@ -36,14 +37,29 @@ app = MyFlaskApp(__name__)
 
 @app.route('/api/v1.0/attack', methods=['GET'])
 def attack():
+    start = timer()
+    monitor = data_monitor.DataMonitor()
     vm_id = request.args.get('vm_id')
     app.logger.info(f'New attack request for VM: {vm_id}')
     cloud_env = cloud.Cloud()
     vm_list = cloud_env.vulnerable_to(vm_id)
+    end = timer()
+    monitor.log_new_request(start, end)
     return make_response(jsonify(list(vm_list)), 200)
 
     # TODO if no vm_id passed?
     # TODO if vm_id doesn't exists?
+
+
+@app.route('/api/v1.0/stats', methods=['GET'])
+def stats():
+    start = timer()
+    monitor = data_monitor.DataMonitor()
+    current_stats = monitor.get_stats()
+    end = timer()
+    monitor.log_new_request(start, end)
+
+    return make_response(jsonify(current_stats), 200)
 
 
 if __name__ == '__main__':  # to run directly from python
