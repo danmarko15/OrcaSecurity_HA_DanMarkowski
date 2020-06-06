@@ -16,24 +16,24 @@ class DataMonitor(metaclass=Singleton):
         cloud_env = cloud.Cloud()
         self.vm_count = cloud_env.vm_count
         self.request_count = 0
-        self.avg_proc_time = -1
+        self.avg_request_time = -1
 
     def log_new_request(self, start, end):
-        """Log a new request made to the service, saving time and request count"""
+        """Log a new request made to the service, calculate average request time and count"""
         self.request_count += 1
         time = (end - start) * 1000
-        if self.avg_proc_time is not -1:
-            self.avg_proc_time = (self.avg_proc_time + time) / self.request_count
+        if self.avg_request_time is not -1:
+            self.avg_request_time = (self.avg_request_time + time) / self.request_count
         else:
-            self.avg_proc_time = time
+            self.avg_request_time = time
 
-        app.logger.info(f'Logged new reuqest with time: {time}, new average is: {self.avg_proc_time}')
+        app.logger.info(f'Logged new request with time: {time}, new average is: {self.avg_request_time}')
 
     def get_stats(self):
-        """Return current service stats"""
+        """Return current service stats: number of VM in the cloud, requests made and average request time """
         stat_dict = dict()
         stat_dict['vm_count'] = self.vm_count
         stat_dict['request_count'] = self.request_count
-        stat_dict['average_request_time'] = self.avg_proc_time
+        stat_dict['average_request_time'] = self.avg_request_time
 
         return stat_dict

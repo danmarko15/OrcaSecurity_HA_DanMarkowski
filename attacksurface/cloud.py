@@ -29,7 +29,9 @@ class Cloud(metaclass=Singleton):
         self.__config_vm_vulnerable_to_vms()
 
     def __config_tag_to_vmid(self):
-        """Configure the tag to vm_ids using input VM config, mapping which VMs are tagged with 'tag'"""
+        """Configure the tag to vm_ids
+         Using the VM config, map each tag to all VMs that have it
+         """
         app.logger.info(f'initializing the tag_to_vmid config')
         tag_to_vmid = {}
         for vm in self.__vms_cfg:
@@ -42,8 +44,10 @@ class Cloud(metaclass=Singleton):
         app.logger.info(f'Configured tag_to_vmid: {tag_to_vmid}')
 
     def __config_dtag_to_stag(self):
-        """Configure the dest_tag to src_tag using input FW rules config, mapping which tags can potentially be
-        attacked by which other tags"""
+        """Configure the dest_tag to src_tag
+        Using the FW rules config, map each dest tag to the src tag that can
+        potentially attack it
+        """
         app.logger.info(f'initializing the dtag_to_stag config')
         dtag_to_stag = {}
         for rule in self.__fw_rules:
@@ -56,7 +60,9 @@ class Cloud(metaclass=Singleton):
         app.logger.info(f'Configured dtag_to_stag: {dtag_to_stag}')
 
     def __config_vm_vulnerable_to_vms(self):
-        """Configure the vm_vulnerable_to_vms, mapping what VM can potentially be attacked by which VMs"""
+        """Configure the vm_vulnerable_to_vms
+        Using all configurations, map each VM to all VMs that can potentially attack it
+        """
         app.logger.info(f'initializing the vm_vulnerable_to_vms config')
         vm_vulnerable_to_vms = {}
         for vm in self.__vms_cfg:
@@ -72,9 +78,8 @@ class Cloud(metaclass=Singleton):
         self.__vm_to_vms = vm_vulnerable_to_vms
         app.logger.info(f'Configured vm_vulnerable_to_vms: {vm_vulnerable_to_vms}')
 
-    # get list of vms that can attack <vm>
     def vulnerable_to(self, vm_id):
-        """Return VM list that can potentially attack vm_id"""
+        """Return VM list that can potentially attack 'vm_id'"""
         app.logger.info(f'Getting list of Virtual Machines that can potentially attack: {vm_id}')
         vm_list = self.__vm_to_vms[vm_id]
         if vm_list:
