@@ -1,6 +1,6 @@
 import json
-
 from flask import current_app as app
+from error_handler import ErrorHandler
 
 
 class Singleton(type):
@@ -16,12 +16,20 @@ class Cloud(metaclass=Singleton):
     def __init__(self, cloud_env_cfg=None):
         app.logger.info(f'initializing the cloud environment')
         if cloud_env_cfg:
-            with open(cloud_env_cfg) as cloud_json_cfg:
-                cloud_env = json.load(cloud_json_cfg)
-                self.__vms_cfg = cloud_env["vms"]
-                self.vm_count = len(self.__vms_cfg)
-                self.__fw_rules = cloud_env["fw_rules"]
-                self.__init_cloud_env()
+            try:
+                with open(cloud_env_cfg) as cloud_json_cfg:
+                    cloud_env = json.load(cloud_json_cfg)
+                    self.__vms_cfg = cloud_env["vms"]
+                    self.vm_count = len(self.__vms_cfg)
+                    self.__fw_rules = cloud_env["fw_rules"]
+                    self.__init_cloud_env()
+            except FileNotFoundError as error:
+                ErrorHandler.handle_error('FileNotFound: Could not load service', error, sys_exit=True)
+            except KeyError as error:
+                ErrorHandler.handle_error('KeyError: Error parsing the config, data may be corrupt', error,
+                                          sys_exit=True)
+            except Exception as error:
+                ErrorHandler.handle_error('Could not load service', error, sys_exit=True)
 
     def __init_cloud_env(self):
         self.__config_tag_to_vmid()
@@ -81,8 +89,9 @@ class Cloud(metaclass=Singleton):
     def vulnerable_to(self, vm_id):
         """Return VM list that can potentially attack 'vm_id'"""
         app.logger.info(f'Getting list of Virtual Machines that can potentially attack: {vm_id}')
-        vm_list = self.__vm_to_vms[vm_id]
-        if vm_list:
+        vm_list = []
+        if vm_id in self.__vm_to_vms and self.__vm_to_vms[vm_id]:
+            vm_list = self.__vm_to_vms[vm_id]
             app.logger.info(f'VM {vm_id} can be attacked by: {vm_list}')
         else:
             app.logger.info(f'VM {vm_id} is has no potential attackers')
