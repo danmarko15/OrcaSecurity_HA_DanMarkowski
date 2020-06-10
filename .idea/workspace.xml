@@ -2,11 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="028ff573-775e-44ee-be19-5b8e9bdb15fe" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/attacksurface/attack_surface.py" beforeDir="false" afterPath="$PROJECT_DIR$/attacksurface/attack_surface.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/attacksurface/cloud.py" beforeDir="false" afterPath="$PROJECT_DIR$/attacksurface/cloud.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/attack_surface_tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/attacksurface/error_handler.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,7 +31,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
+    <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
   </component>
   <component name="RunManager">
     <configuration name="attack_surface" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
@@ -75,6 +74,11 @@
     </task>
     <servers />
   </component>
+  <component name="VcsManagerConfiguration">
+    <ignored-roots>
+      <path value="$PROJECT_DIR$/OrcaSecurity_HA_AttackSurface" />
+    </ignored-roots>
+  </component>
   <component name="WindowStateProjectService">
     <state width="1899" height="282" key="GridCell.Tab.0.bottom" timestamp="1591224343927">
       <screen x="0" y="0" width="1920" height="1040" />
@@ -92,6 +96,14 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="1899" height="282" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1591224343927" />
+    <state x="461" y="162" key="SettingsEditor" timestamp="1591530015888">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="461" y="162" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1591530015888" />
+    <state x="656" y="344" key="com.intellij.ide.util.TipDialog" timestamp="1591529832356">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="656" y="344" key="com.intellij.ide.util.TipDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1591529832356" />
     <state x="701" y="163" key="refactoring.ChangeSignatureDialog" timestamp="1591389943778">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>

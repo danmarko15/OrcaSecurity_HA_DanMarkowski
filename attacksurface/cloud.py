@@ -43,11 +43,15 @@ class Cloud(metaclass=Singleton):
         app.logger.info(f'initializing the tag_to_vmid config')
         tag_to_vmid = {}
         for vm in self.__vms_cfg:
-            for tag in vm["tags"]:
-                if tag in tag_to_vmid:
-                    tag_to_vmid[tag].add(vm["vm_id"])
-                else:
-                    tag_to_vmid[tag] = {vm["vm_id"]}
+            try:
+                for tag in vm["tags"]:
+                    if tag in tag_to_vmid:
+                        tag_to_vmid[tag].add(vm["vm_id"])
+                    else:
+                        tag_to_vmid[tag] = {vm["vm_id"]}
+            except KeyError as error:
+                ErrorHandler.handle_error('KeyError: Error parsing VM config, skipping value', error)
+                continue
         self.tag_to_vmid = tag_to_vmid
         app.logger.info(f'Configured tag_to_vmid: {tag_to_vmid}')
 
@@ -59,11 +63,15 @@ class Cloud(metaclass=Singleton):
         app.logger.info(f'initializing the dtag_to_stag config')
         dtag_to_stag = {}
         for rule in self.__fw_rules:
-            dest_tag = rule["dest_tag"]
-            if dest_tag in dtag_to_stag:
-                dtag_to_stag[dest_tag].add(rule["source_tag"])
-            else:
-                dtag_to_stag[dest_tag] = {rule["source_tag"]}
+            try:
+                dest_tag = rule["dest_tag"]
+                if dest_tag in dtag_to_stag:
+                    dtag_to_stag[dest_tag].add(rule["source_tag"])
+                else:
+                    dtag_to_stag[dest_tag] = {rule["source_tag"]}
+            except KeyError as error:
+                ErrorHandler.handle_error('KeyError: Error parsing FW config, skipping value', error)
+                continue
         self.dtag_to_stag = dtag_to_stag
         app.logger.info(f'Configured dtag_to_stag: {dtag_to_stag}')
 
@@ -74,15 +82,19 @@ class Cloud(metaclass=Singleton):
         app.logger.info(f'initializing the vm_vulnerable_to_vms config')
         vm_vulnerable_to_vms = {}
         for vm in self.__vms_cfg:
-            vm_id = vm["vm_id"]
-            vm_vulnerable_to_vms[vm_id] = set()
-            source_tags = set()
-            for tag in vm["tags"]:
-                if tag in self.dtag_to_stag:
-                    source_tags = source_tags.union(self.dtag_to_stag[tag])
-            for source_tag in source_tags:
-                if source_tag in self.tag_to_vmid:
-                    vm_vulnerable_to_vms[vm_id] = vm_vulnerable_to_vms[vm_id].union(self.tag_to_vmid[source_tag])
+            try:
+                vm_id = vm["vm_id"]
+                vm_vulnerable_to_vms[vm_id] = set()
+                source_tags = set()
+                for tag in vm["tags"]:
+                    if tag in self.dtag_to_stag:
+                        source_tags = source_tags.union(self.dtag_to_stag[tag])
+                for source_tag in source_tags:
+                    if source_tag in self.tag_to_vmid:
+                        vm_vulnerable_to_vms[vm_id] = vm_vulnerable_to_vms[vm_id].union(self.tag_to_vmid[source_tag])
+            except KeyError as error:
+                ErrorHandler.handle_error('KeyError: Error parsing data, skipping value', error)
+                continue
         self.__vm_to_vms = vm_vulnerable_to_vms
         app.logger.info(f'Configured vm_vulnerable_to_vms: {vm_vulnerable_to_vms}')
 
